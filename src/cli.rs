@@ -40,6 +40,9 @@ pub struct Opt {
     #[clap(short = 'K', long = "long-kernel", help = "Lengthens kernel output")]
     pub long_kernel: bool,
 
+    #[clap(short = 'G', long = "shorter-gpu", help = "Shortens GPU device name")]
+    pub shorter_gpu: bool,
+
     #[clap(
         short = 'm',
         long = "memory-percentage",
@@ -139,7 +142,7 @@ impl Opt {
         }
 
         if args.long_kernel {
-            self.long_shell = true;
+            self.long_kernel = true;
         }
 
         if args.memory_percentage {
@@ -156,6 +159,10 @@ impl Opt {
 
         if args.ascii_artists {
             self.ascii_artists = true;
+        }
+
+        if args.shorter_gpu {
+            self.shorter_gpu = args.shorter_gpu;
         }
 
         if args.config.is_some() {
