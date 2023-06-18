@@ -358,6 +358,25 @@ fn handle_readout_processor(
     use crate::format::cpu as format_cpu;
     use crate::format::cpu_only as format_cpu_only;
 
+    let cpu_model = match general_readout.cpu_model_name() {
+        Ok(m) => {
+            if opt.shorter_cpu {
+                m.split_whitespace()
+                    // TODO: ensure this works with Intel CPU
+                    // Usually of form "AMD Ryzen 7 5800X 8-Core Processor" or "Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz"
+                    .take(4)
+                    .collect::<Vec<&str>>()
+                    .join(" ")
+            } else {
+                m
+            }
+        }
+        Err(e) => {
+            readout_values.push(Readout::new_err(ReadoutKey::Processor, e));
+            return;
+        }
+    };
+
     let cores = {
         if opt.physical_cores {
             general_readout.cpu_physical_cores()
@@ -366,12 +385,15 @@ fn handle_readout_processor(
         }
     };
 
-    match (general_readout.cpu_model_name(), cores) {
-        (Ok(m), Ok(c)) => {
-            readout_values.push(Readout::new(ReadoutKey::Processor, format_cpu(&m, c)))
-        }
-        (Ok(m), _) => readout_values.push(Readout::new(ReadoutKey::Processor, format_cpu_only(&m))),
-        (Err(e), _) => readout_values.push(Readout::new_err(ReadoutKey::Processor, e)),
+    match cores {
+        Ok(c) => readout_values.push(Readout::new(
+            ReadoutKey::Processor,
+            format_cpu(&cpu_model, c),
+        )),
+        _ => readout_values.push(Readout::new(
+            ReadoutKey::Processor,
+            format_cpu_only(&cpu_model),
+        )),
     }
 }
 

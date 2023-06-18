@@ -40,8 +40,19 @@ pub struct Opt {
     #[clap(short = 'K', long = "long-kernel", help = "Lengthens kernel output")]
     pub long_kernel: bool,
 
-    #[clap(short = 'G', long = "shorter-gpu", help = "Shortens GPU device name")]
+    #[clap(
+        short = 'G',
+        long = "shorter-gpu",
+        help = "Shortens GPU device / model name"
+    )]
     pub shorter_gpu: bool,
+
+    #[clap(
+        short = 'g',
+        long = "shorter-cpu",
+        help = "Shortens CPU device / model name"
+    )]
+    pub shorter_cpu: bool,
 
     #[clap(
         short = 'm',
@@ -163,6 +174,10 @@ impl Opt {
 
         if args.shorter_gpu {
             self.shorter_gpu = args.shorter_gpu;
+        }
+
+        if args.shorter_cpu {
+            self.shorter_cpu = args.shorter_cpu;
         }
 
         if args.config.is_some() {
